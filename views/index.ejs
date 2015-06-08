@@ -15,7 +15,7 @@
 
 <% books.forEach(function(book){ %>
   <tr>
-    <td><%= book.title %></td>
+    <td><a href="/books/<%= book.id%>"><%= book.title %></a></td>
     <td><%= book.author %></td>
     <td><%= book.year %></td>
     <td><a href="/books/<%= book.id %>/edit">Edit</a></td>

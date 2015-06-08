@@ -3,10 +3,15 @@ app = express(),
 methodOverride = require('method-override'),
 bodyParser = require("body-parser");
 
+var morgan = require('morgan');
+app.use(morgan('tiny'));
+
 app.set('view engine', 'ejs');
 app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(methodOverride('_method'));
+
+
 
 var books = [];
 var count = 1;
