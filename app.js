@@ -13,18 +13,43 @@ app.use(bodyParser.urlencoded({extended:true}));
 app.use(methodOverride('_method'));
 
 
+function addBook(title, author, year) {
+  db.Book.create({
+    title: title,
+    author: author,
+    year: year
+  }, function (err, book) {
+    if (err) {
+      console.log(err);
+    } else {
+      console.log(book);
+    }
+  });
+}
 
-var books = [];
-var count = 1;
-var foundBook;
-
+function updateBook(title, author, year, id) {
+  db.Book.update(
+    {_id: id},
+    {title: title,
+    author: author,
+    year: year},
+    function (err, book) {
+    if (err) {
+      console.log(err);
+    } else {
+      console.log(book);
+    }
+  });
+}
 
 app.get('/', function(req,res){
   res.redirect('/books');
 });
 
 app.get('/books', function(req,res){
-  res.render('index', {books:books});
+  db.Book.find({}, function (err, books) {
+    res.render('index', {books:books});
+  });
 });
 
 app.get('/books/new', function(req,res){
@@ -33,57 +58,32 @@ app.get('/books/new', function(req,res){
 
 app.post('/books', function(req,res){
   var newBook = req.body.book;
-  newBook.id = count;
-  books.push(newBook);
-  count++;
+  addBook(newBook.title, newBook.author, newBook.year);
   res.redirect('/books');
 });
 
 app.get('/books/:id', function(req,res){
-  books.forEach(function(book){
-    if(book.id === Number(req.params.id)){
-      foundBook = book;
-    }
+  db.Book.findOne({_id: req.params.id}, function (err, book) {
+    res.render('show', {book: book});
   });
-    if(!foundBook){
-      res.render("404");
-    }
-  res.render('show', {book:foundBook});
 });
 
 app.get('/books/:id/edit', function(req,res){
-  books.forEach(function(book){
-    if(book.id === Number(req.params.id)){
-      foundBook = book;
-    }
+  db.Book.findOne({_id: req.params.id}, function (err, book) {
+    res.render('edit', {book: book});
   });
-    if(!foundBook){
-      res.render("404");
-    }
-  res.render('edit', {book:foundBook});
 });
 
 app.put('/books/:id', function(req,res){
-  books.forEach(function(book){
-    if(book.id === Number(req.params.id)){
-      book.title = req.body.book.title;
-      book.author = req.body.book.author;
-      book.year = req.body.book.year;
-    }
-  });
-    if(!foundBook){
-      res.render("404");
-    }
+  var book = req.body.book;
+  updateBook(book.title, book.author, book.year, req.params.id);
   res.redirect('/books');
 });
 
 app.delete('/books/:id', function(req,res){
-  books.forEach(function(book){
-    if(book.id === Number(req.params.id)){
-      books.splice(books.indexOf(book),1);
-    }
-  });
+  db.Book.remove({_id: req.params.id}, function (err, book) {
   res.redirect('/books');
+});
 });
 
 app.get('*', function(req,res){
