@@ -2,6 +2,7 @@ var express = require("express"),
 app = express(),
 methodOverride = require('method-override'),
 bodyParser = require("body-parser");
+db = require('./models');
 
 var morgan = require('morgan');
 app.use(morgan('tiny'));
